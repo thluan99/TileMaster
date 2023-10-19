@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "VGames.sln"
+    "dotnet.defaultSolution": "TileMaster.sln"
 }

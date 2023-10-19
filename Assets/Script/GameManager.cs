@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 public class GameManager : MonoBehaviour
 {
     public static readonly float TIME_TO_ANIMATE = 0.4F;
+    public static GameManager Instance; // Singleton
     private const string CUBE_LAYER = "Cube";
     private const int GAIN_POINT_NUMBER = 3;
     [SerializeField] private List<Transform> _rectPositions;
@@ -16,8 +17,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake() 
     {
+        Instance = this;
+
         _history = new Stack<IUndo>();
-        _rectPositions = new List<Transform>();
     }
 
     void Update()
@@ -36,14 +38,16 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Z) && _history.Count > 0)
-        {
-            IUndo command = _history.Pop();
-            command.Undo();
+    public void Undo()
+    { 
+        if (_history.Count == 0) return;
 
-            ReloadCubePositions();
-        }
+        IUndo command = _history.Pop();
+        command.Undo();
+
+        ReloadCubePositions();
     }
 
     private void ReloadCubePositions()
