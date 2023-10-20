@@ -8,7 +8,7 @@ using UnityEngine;
 public class CubeController : MonoBehaviour, IEntity, IUndo, IStored
 {
     [SerializeField] private string _name;
-    public int Id => (Guid.NewGuid()).GetHashCode();
+    public int Id => (gameObject.name).GetHashCode();
     public string Name => _name;
 
     public bool IsStored { get; set; }
@@ -16,9 +16,11 @@ public class CubeController : MonoBehaviour, IEntity, IUndo, IStored
     private Vector3 _position;
     private Vector3 _rotation;
     private Transform _parent;
+    private Rigidbody _rigid;
 
-    private void Start() 
+    private void Awake() 
     {
+        _rigid = GetComponent<Rigidbody>();
         _position = transform.localPosition;
         _rotation = transform.rotation.eulerAngles;
         _parent = transform.parent;
@@ -26,6 +28,8 @@ public class CubeController : MonoBehaviour, IEntity, IUndo, IStored
 
     public void Undo()
     {
+        _rigid.isKinematic = false;
+        
         transform.SetParent(_parent);
         transform.DOLocalMove(_position, GameManager.TIME_TO_ANIMATE);
         transform.DORotate(_rotation, GameManager.TIME_TO_ANIMATE);
@@ -38,5 +42,10 @@ public class CubeController : MonoBehaviour, IEntity, IUndo, IStored
         _position = position;
         _rotation = rotation;
         _parent = parent;
+    }
+
+    public void SetName(string name)
+    {
+        _name = name;
     }
 }

@@ -16,14 +16,16 @@ public class GameManager : MonoBehaviour
 {
     public static readonly float TIME_TO_ANIMATE = 0.4F;
     public static GameManager Instance; // Singleton
-    private const string CUBE_LAYER = "Cube";
+    private const string TILE_LAYER = "Tile";
     private const int GAIN_POINT_NUMBER = 3;
+
     [SerializeField] private GamePlayUI _gamePlayUI;
-    [SerializeField] private Transform _cubePool;
+    [SerializeField] private Transform _tilePool;
     [SerializeField] private List<Transform> _rectPositions;
 
     private Stack<IUndo> _history;
     private int _collectCount = 1;
+
     public GamePlayObservable GamePlayObservable { get; private set; }
     public ReactiveProperty<GamePlayState> GamePlayCurrentState { get; private set; }
 
@@ -53,10 +55,10 @@ public class GameManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 20))
             {
                 GameObject hitObject = hit.collider.gameObject;
-                if (hitObject.layer == LayerMask.NameToLayer(CUBE_LAYER) &&
+                if (hitObject.layer == LayerMask.NameToLayer(TILE_LAYER) &&
                     !hitObject.GetComponentInChildren<IStored>().IsStored)
                 {
-                    SelectCube(hitObject);
+                    SelectTile(hitObject);
                     ChangeGainStar();
                 }
             }
@@ -70,87 +72,90 @@ public class GameManager : MonoBehaviour
         IUndo command = _history.Pop();
         command.Undo();
 
-        ReloadCubePositions();
+        ReloadTilePositions();
     }
 
-    private void ReloadCubePositions()
+    private void ReloadTilePositions()
     {
         for (int i = 0; i < _rectPositions.Count - 1; i++)
         {
             if (_rectPositions[i].childCount == 0 && _rectPositions[i + 1].childCount != 0)
             {
-                ShiftCubeAllLeft(i + 1);
+                ShiftTileAllLeft(i + 1);
                 break;
             }
         }
     }
 
-    private void SelectCube(GameObject hitObject)
+    private void SelectTile(GameObject hitObject)
     {
         for (int i = 0; i < _rectPositions.Count; i++)
         {
-            var cubeItem = _rectPositions[i].GetComponentInChildren<IEntity>();
+            var tileItem = _rectPositions[i].GetComponentInChildren<IEntity>();
+            hitObject.GetComponent<Rigidbody>().isKinematic = true;
 
-            if (cubeItem != null && cubeItem.Name == hitObject.GetComponent<IEntity>().Name)
+
+            if (tileItem != null && tileItem.Name == hitObject.GetComponent<IEntity>().Name)
             {
-                SameNameHandler(hitObject, i, cubeItem);
+                SameNameHandler(hitObject, i, tileItem);
                 break;
             }
 
             if (_rectPositions[i].transform.childCount == 0)
             {
-                IUndo undoCommand = hitObject.GetComponent<IUndo>();
-                _history.Push(undoCommand);
-
-                MoveCubeToOtherPosition(hitObject, i);
-                hitObject.GetComponentInChildren<IStored>().IsStored = true;
+                MoveTileSelected(hitObject, i);
                 break;
             }
         }
     }
 
-    private void SameNameHandler(GameObject hitObject, int i, IEntity cubeItem)
+    private void MoveTileSelected(GameObject hitObject, int i)
+    {
+        IUndo undoCommand = hitObject.GetComponent<IUndo>();
+        _history.Push(undoCommand);
+
+        MoveTileToOtherPosition(hitObject, i);
+        hitObject.GetComponentInChildren<IStored>().IsStored = true;
+    }
+
+    private void SameNameHandler(GameObject hitObject, int i, IEntity tileItem)
     {
         for (int j = _rectPositions.Count - 1; j >= i; j--)
         {
-            if (_rectPositions[j].childCount != 0 && _rectPositions[j].GetComponentInChildren<IEntity>().Name == cubeItem.Name)
+            if (_rectPositions[j].childCount != 0 && _rectPositions[j].GetComponentInChildren<IEntity>().Name == tileItem.Name)
             {
-                ShiftCubeAllRight(j + 1);
-
-                IUndo undoCommand = hitObject.GetComponent<IUndo>();
-                _history.Push(undoCommand);
-
-                MoveCubeToOtherPosition(hitObject, j + 1);
+                ShiftTileAllRight(j + 1);
+                MoveTileSelected(hitObject, j + 1);
 
                 break;
             }
         }
     }
 
-    private void ShiftCubeAllLeft(int start, int length = 1)
+    private void ShiftTileAllLeft(int start, int length = 1)
     {
         for (int i = start; i < _rectPositions.Count; i++)
         {
             if (_rectPositions[i].childCount == 0) continue;
 
             GameObject transformRect = _rectPositions[i].GetChild(0).gameObject;
-            MoveCubeToOtherPosition(transformRect, i - length);
+            MoveTileToOtherPosition(transformRect, i - length);
         }
     }
 
-    private void ShiftCubeAllRight(int start)
+    private void ShiftTileAllRight(int start)
     {
         for (int i = _rectPositions.Count - 1; i >= start; i--)
         {
             if (_rectPositions[i].childCount != 0 && (i != _rectPositions.Count - 1))
             {
                 GameObject transformRect = _rectPositions[i].GetChild(0).gameObject;
-                MoveCubeToOtherPosition(transformRect, i + 1);
+                MoveTileToOtherPosition(transformRect, i + 1);
             }
         }
     }
 
-    private void MoveCubeToOtherPosition(GameObject hitObject, int position)
+    private void MoveTileToOtherPosition(GameObject hitObject, int position)
     {
         DOTween.Kill(hitObject.transform);
 
@@ -165,17 +170,17 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < _rectPositions.Count; i++)
         {
-            var cubeItem = _rectPositions[i].GetComponentInChildren<IEntity>();
+            var tileItem = _rectPositions[i].GetComponentInChildren<IEntity>();
 
-            if (cubeItem == null) return;
+            if (tileItem == null) return;
 
-            if (name == cubeItem.Name)
+            if (name == tileItem.Name)
             {
                 _collectCount++;
             }
             else
             {
-                name = cubeItem.Name;
+                name = tileItem.Name;
                 _collectCount = 1;
             }
 
@@ -202,12 +207,12 @@ public class GameManager : MonoBehaviour
 
         for (int j = index + 1; j < _rectPositions.Count; j++)
         {
-            ShiftCubeAllLeft(j, GAIN_POINT_NUMBER);
+            ShiftTileAllLeft(j, GAIN_POINT_NUMBER);
         }
 
         _gamePlayUI.IncreaseStar();
 
-        if (_cubePool.childCount == 0)
+        if (_tilePool.childCount == 0)
         {
             GamePlayCurrentState.Value = GamePlayState.Won;
         }
@@ -217,7 +222,7 @@ public class GameManager : MonoBehaviour
     {
         _rectPositions.Clear();
 
-        foreach (Transform item in _cubePool.transform)
+        foreach (Transform item in _tilePool.transform)
         {
             _rectPositions.Add(item);
         }
