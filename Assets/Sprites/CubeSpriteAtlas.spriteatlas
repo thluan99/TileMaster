@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CubeSpriteAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 80898d44592fc254498d8c0250fa701b, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: d9b735f240d322b4a9ae80bd452ec938, type: 3}
+  - {fileID: 21300000, guid: 919ff6e3050e41349a2672577ca0b83b, type: 3}
+  - {fileID: 21300000, guid: 3b8bc88469aadab48b958e64d3f93ce4, type: 3}
+  - {fileID: 21300000, guid: a23b3576ac8367a4499f3e7fd7e7dc70, type: 3}
+  - {fileID: 21300000, guid: bc2aa5a7c4c3f2f468c922dae025909c, type: 3}
+  - {fileID: 21300000, guid: afb32c79911494145b65b9ae42b38c18, type: 3}
+  - {fileID: 21300000, guid: f436186a8481e3e4a90e5c4e068d6107, type: 3}
+  - {fileID: 21300000, guid: a7f1901b3e0a29248a1f15bae3f1a35f, type: 3}
+  - {fileID: 21300000, guid: e572d1cb5ca2c7043922f50fa9375188, type: 3}
+  - {fileID: 21300000, guid: 923d10aed33ebe74a92ee694e4aa063e, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - flower7
+  - flower8
+  - flower2
+  - flower6
+  - flower3
+  - flower5
+  - flower9
+  - flower10
+  - flower1
+  - flower4
+  m_RenderDataMap: {}
+  m_Tag: CubeSpriteAtlas
+  m_IsVariant: 0

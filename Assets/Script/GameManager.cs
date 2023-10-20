@@ -2,7 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using Unity.VisualScripting;
+using UniRx;
+using System;
+
+public enum GamePlayState
+{
+    Playing,
+    Won,
+    Lost
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -10,38 +18,53 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance; // Singleton
     private const string CUBE_LAYER = "Cube";
     private const int GAIN_POINT_NUMBER = 3;
+    [SerializeField] private GamePlayUI _gamePlayUI;
+    [SerializeField] private Transform _cubePool;
     [SerializeField] private List<Transform> _rectPositions;
 
     private Stack<IUndo> _history;
     private int _collectCount = 1;
+    public GamePlayObservable GamePlayObservable { get; private set; }
+    public ReactiveProperty<GamePlayState> GamePlayCurrentState { get; private set; }
 
-    private void Awake() 
+    private void Awake()
     {
         Instance = this;
 
+        GamePlayObservable = GetComponent<GamePlayObservable>();
         _history = new Stack<IUndo>();
+        GamePlayCurrentState = new ReactiveProperty<GamePlayState>(GamePlayState.Playing);
+    }
+
+    private void Start()
+    {
+        GamePlayObservable.LoseHandleRequest.Subscribe(_ =>
+        {
+            GamePlayCurrentState.Value = GamePlayState.Lost;
+        }).AddTo(gameObject);
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && GamePlayCurrentState.Value == GamePlayState.Playing)
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 20))
             {
                 GameObject hitObject = hit.collider.gameObject;
-                if (hitObject.layer == LayerMask.NameToLayer(CUBE_LAYER))
+                if (hitObject.layer == LayerMask.NameToLayer(CUBE_LAYER) &&
+                    !hitObject.GetComponentInChildren<IStored>().IsStored)
                 {
                     SelectCube(hitObject);
-                    ChangeGainPoint();
+                    ChangeGainStar();
                 }
             }
         }
     }
 
     public void Undo()
-    { 
+    {
         if (_history.Count == 0) return;
 
         IUndo command = _history.Pop();
@@ -58,7 +81,7 @@ public class GameManager : MonoBehaviour
             {
                 ShiftCubeAllLeft(i + 1);
                 break;
-            }            
+            }
         }
     }
 
@@ -68,7 +91,7 @@ public class GameManager : MonoBehaviour
         {
             var cubeItem = _rectPositions[i].GetComponentInChildren<IEntity>();
 
-            if ( cubeItem != null && cubeItem.Name == hitObject.GetComponent<IEntity>().Name)
+            if (cubeItem != null && cubeItem.Name == hitObject.GetComponent<IEntity>().Name)
             {
                 SameNameHandler(hitObject, i, cubeItem);
                 break;
@@ -80,6 +103,7 @@ public class GameManager : MonoBehaviour
                 _history.Push(undoCommand);
 
                 MoveCubeToOtherPosition(hitObject, i);
+                hitObject.GetComponentInChildren<IStored>().IsStored = true;
                 break;
             }
         }
@@ -135,7 +159,7 @@ public class GameManager : MonoBehaviour
         hitObject.transform.DOLocalMove(Vector3.zero, TIME_TO_ANIMATE);
     }
 
-    private void ChangeGainPoint()
+    private void ChangeGainStar()
     {
         string name = "";
 
@@ -157,14 +181,17 @@ public class GameManager : MonoBehaviour
 
             if (_collectCount == GAIN_POINT_NUMBER)
             {
-                StartCoroutine(DestroyAndShipCube(i));
+                StartCoroutine(HandleGainStar(i));
                 _history.Clear();
-                break;
+                return;
             }
+
         }
+
+        GamePlayCurrentState.Value = GamePlayState.Lost;
     }
 
-    private IEnumerator DestroyAndShipCube(int index)
+    private IEnumerator HandleGainStar(int index)
     {
         yield return new WaitForSeconds(TIME_TO_ANIMATE);
 
@@ -177,14 +204,20 @@ public class GameManager : MonoBehaviour
         {
             ShiftCubeAllLeft(j, GAIN_POINT_NUMBER);
         }
+
+        _gamePlayUI.IncreaseStar();
+
+        if (_cubePool.childCount == 0)
+        {
+            GamePlayCurrentState.Value = GamePlayState.Won;
+        }
     }
 
-    private void Reset() 
+    private void Reset()
     {
-        var storeCubePanel = GameObject.Find("StoreCubePanel");
         _rectPositions.Clear();
 
-        foreach (Transform item in storeCubePanel.transform)
+        foreach (Transform item in _cubePool.transform)
         {
             _rectPositions.Add(item);
         }
