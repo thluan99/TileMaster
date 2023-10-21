@@ -17,10 +17,8 @@ public class MenuUI : MonoBehaviour
     {
         _playButton.onClick.AddListener(PlayButtonClickHandler);
 
-        if (PlayerPrefs.HasKey(Level.ActivatedLevelKey))
-        {
-            _levelIndex = PlayerPrefs.GetInt(Level.ActivatedLevelKey);
-        }
+        _levelIndex = LevelManager.Instance.currentLevel.LevelIndex;
+
         _levelindexText.SetText(_levelIndex.ToString());
     }
 

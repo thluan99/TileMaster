@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
     private const string TILE_LAYER = "Tile";
 
     [SerializeField] private GamePlayUI _gamePlayUI;
-    [SerializeField] private LevelGenerator _levelGenerator;
     [SerializeField] private Transform _tilePool;
     [SerializeField] private List<Transform> _rectPositions;
 
@@ -29,15 +28,15 @@ public class GameManager : MonoBehaviour
     private int _collectCount = 1;
     private bool _isGainingStar = false;
     private int _gainPointNumber = 3;
+    private Level _currentLevel;
 
-    public Level CurrentLevel { get; private set; }
     public GamePlayObservable GamePlayObservable { get; private set; }
     public ReactiveProperty<GamePlayState> GamePlayCurrentState { get; private set; }
 
     private void Awake()
     {
         Instance = this;
-        
+
         GamePlayObservable = GetComponent<GamePlayObservable>();
         _history = new Stack<IUndo>();
         GamePlayCurrentState = new ReactiveProperty<GamePlayState>(GamePlayState.Playing);
@@ -74,10 +73,10 @@ public class GameManager : MonoBehaviour
 
     private void LoadLevelSetting()
     {
-        CurrentLevel = _levelGenerator.CurrentLevel;
-        _gainPointNumber = CurrentLevel.MatchingCount;
-        _gamePlayUI.SetTime(CurrentLevel.PlayTime);
-        _gamePlayUI.SetLelvel(CurrentLevel.LevelIndex);
+        _currentLevel = LevelManager.Instance.currentLevel;
+        _gainPointNumber = _currentLevel.MatchingCount;
+        _gamePlayUI.SetTime(_currentLevel.PlayTime);
+        _gamePlayUI.SetLelvel(_currentLevel.LevelIndex);
     }
 
     public void Undo()
@@ -208,7 +207,7 @@ public class GameManager : MonoBehaviour
 
         }
 
-        GamePlayCurrentState.Value = GamePlayState.Lost;
+        GamePlayObservable.LoseHandleRequest.OnNext(Unit.Default);
     }
 
     private IEnumerator HandleGainStar(int index)
@@ -231,17 +230,13 @@ public class GameManager : MonoBehaviour
         if (_tilePool.childCount == 0)
         {
             GamePlayCurrentState.Value = GamePlayState.Won;
+            LevelManager.Instance.NextLevel().Activate();
         }
 
         _isGainingStar = false;
     }
 
-// ======================
-
-
-
-
-
+    // ======================
 
     private void Reset()
     {

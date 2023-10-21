@@ -10,12 +10,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private LevelSettings _levelSettings;
 
-    public Level CurrentLevel { get; private set; }
-
-    private void Awake() 
-    {
-        CurrentLevel = new Level(_levelSettings);
-    }
+    public Level CurrentLevel => LevelManager.Instance.currentLevel;
 
     private void Start() 
     {

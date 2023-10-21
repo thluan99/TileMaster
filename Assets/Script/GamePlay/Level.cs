@@ -8,7 +8,7 @@ using UnityEngine;
 public class Level : IEntity, IActivated
 {
     public bool IsActivated => ActivatedLevelId == Id;
-    [field: SerializeField] public int Id {get; private set;}
+    public int Id {get; private set;}
     public string Name {get; private set;}
     public LevelSettings LevelSettings;
     public int MatchingCount;
@@ -22,6 +22,7 @@ public class Level : IEntity, IActivated
 
     public Level(LevelSettings levelSettings)
     {
+        Id = levelSettings.Id;
         Name = levelSettings.Name;
         MatchingCount = levelSettings.MatchingCount;
         LevelIndex = levelSettings.Level;

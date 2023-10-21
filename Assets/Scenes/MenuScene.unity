@@ -667,6 +667,62 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1379853449
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1379853450}
+  - component: {fileID: 1379853451}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1379853450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379853449}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1379853451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379853449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb999bf1e986c743b68d2869b071920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentLevel:
+    <Id>k__BackingField: 0
+    LevelSettings: {fileID: 0}
+    MatchingCount: 0
+    LevelIndex: 0
+    PlayTime: 0
+    NumberOfStar: 0
+    TileType: []
+  levelSettings:
+  - {fileID: 11400000, guid: 320c1ebee2a513e4ca9ec0639d6ce6c0, type: 2}
+  - {fileID: 11400000, guid: 2a4c1485dcbf55844b6265cae459a541, type: 2}
+  - {fileID: 11400000, guid: 2c4e52593650d5b4fb41a930836bcec9, type: 2}
 --- !u!1 &1725884758
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,11 +39,8 @@ public class LevelSetttingsEditor : Editor
     {
         DrawDefaultInspector();
         LevelSettings levelSettings = (LevelSettings)target;
-
-        if (GUILayout.Button("Load Id"))
-        {
-            levelSettings.id = levelSettings.Id;
-        }
+        
+        levelSettings.id = levelSettings.Id;
 
         if (levelSettings.TileTypes.Length == 0) return;
 
