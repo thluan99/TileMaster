@@ -12,6 +12,7 @@ public class GamePlayUI : MonoBehaviour
     [SerializeField] private Button _undoButton;
     [SerializeField] private TextMeshProUGUI _starText;
     [SerializeField] private TextMeshProUGUI _timeText;
+    [SerializeField] private TextMeshProUGUI _levelText;
 
     private int _time;
     private int _minutes;
@@ -21,7 +22,6 @@ public class GamePlayUI : MonoBehaviour
     private void Start()
     {
         _gamePlayObservable = GameManager.Instance.GamePlayObservable;
-        _time = TIME_TO_PLAY;
         _undoButton.onClick.AddListener(OnClickUndoButtonHandler);
 
         InvokeRepeating("DecreaseTime", 1, 1);
@@ -39,6 +39,16 @@ public class GamePlayUI : MonoBehaviour
                 CancelInvoke("DecreaseTime");
                 Debug.Log("You Lose!");
             }).AddTo(gameObject);
+    }
+
+    public void SetTime(int time) 
+    {
+        _time = time;
+
+    }
+    public void SetLelvel(int level)
+    {
+        _levelText.SetText("Lv." + level.ToString());
     }
 
     private void OnClickUndoButtonHandler()

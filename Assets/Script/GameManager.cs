@@ -12,27 +12,32 @@ public enum GamePlayState
     Lost
 }
 
+//TODO:: Chech bug nhan diem va chon tile khac thi xoa het cac tile trong stored
+
 public class GameManager : MonoBehaviour
 {
     public static readonly float TIME_TO_ANIMATE = 0.4F;
     public static GameManager Instance; // Singleton
     private const string TILE_LAYER = "Tile";
-    private const int GAIN_POINT_NUMBER = 3;
 
     [SerializeField] private GamePlayUI _gamePlayUI;
+    [SerializeField] private LevelGenerator _levelGenerator;
     [SerializeField] private Transform _tilePool;
     [SerializeField] private List<Transform> _rectPositions;
 
     private Stack<IUndo> _history;
     private int _collectCount = 1;
+    private bool _isGainingStar = false;
+    private int _gainPointNumber = 3;
 
+    public Level CurrentLevel { get; private set; }
     public GamePlayObservable GamePlayObservable { get; private set; }
     public ReactiveProperty<GamePlayState> GamePlayCurrentState { get; private set; }
 
     private void Awake()
     {
         Instance = this;
-
+        
         GamePlayObservable = GetComponent<GamePlayObservable>();
         _history = new Stack<IUndo>();
         GamePlayCurrentState = new ReactiveProperty<GamePlayState>(GamePlayState.Playing);
@@ -40,6 +45,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        LoadLevelSetting();
+
         GamePlayObservable.LoseHandleRequest.Subscribe(_ =>
         {
             GamePlayCurrentState.Value = GamePlayState.Lost;
@@ -48,7 +55,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && GamePlayCurrentState.Value == GamePlayState.Playing)
+        if (Input.GetMouseButtonDown(0) && GamePlayCurrentState.Value == GamePlayState.Playing && !_isGainingStar)
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -63,6 +70,14 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void LoadLevelSetting()
+    {
+        CurrentLevel = _levelGenerator.CurrentLevel;
+        _gainPointNumber = CurrentLevel.MatchingCount;
+        _gamePlayUI.SetTime(CurrentLevel.PlayTime);
+        _gamePlayUI.SetLelvel(CurrentLevel.LevelIndex);
     }
 
     public void Undo()
@@ -184,7 +199,7 @@ public class GameManager : MonoBehaviour
                 _collectCount = 1;
             }
 
-            if (_collectCount == GAIN_POINT_NUMBER)
+            if (_collectCount == _gainPointNumber)
             {
                 StartCoroutine(HandleGainStar(i));
                 _history.Clear();
@@ -198,16 +213,17 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandleGainStar(int index)
     {
+        _isGainingStar = true;
         yield return new WaitForSeconds(TIME_TO_ANIMATE);
 
-        for (int j = index - GAIN_POINT_NUMBER + 1; j <= index; j++)
+        for (int j = index - _gainPointNumber + 1; j <= index; j++)
         {
             Destroy(_rectPositions[j].GetChild(0).gameObject);
         }
 
         for (int j = index + 1; j < _rectPositions.Count; j++)
         {
-            ShiftTileAllLeft(j, GAIN_POINT_NUMBER);
+            ShiftTileAllLeft(j, _gainPointNumber);
         }
 
         _gamePlayUI.IncreaseStar();
@@ -216,7 +232,16 @@ public class GameManager : MonoBehaviour
         {
             GamePlayCurrentState.Value = GamePlayState.Won;
         }
+
+        _isGainingStar = false;
     }
+
+// ======================
+
+
+
+
+
 
     private void Reset()
     {

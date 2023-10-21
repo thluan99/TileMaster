@@ -10,23 +10,22 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private GameObject _tilePrefab;
     [SerializeField] private LevelSettings _levelSettings;
 
-    private Level _currentLevel;
+    public Level CurrentLevel { get; private set; }
 
     private void Awake() 
     {
-        _currentLevel = new Level(_levelSettings);
+        CurrentLevel = new Level(_levelSettings);
     }
 
     private void Start() 
     {
-
-        for (int i = 0; i < _currentLevel.TileType.Length; i++)
+        for (int i = 0; i < CurrentLevel.TileType.Length; i++)
         {
-            var tileType = _currentLevel.TileType[i];
+            var tileType = CurrentLevel.TileType[i];
 
             for (int j = 0; j < tileType.NumberStar; j++)
             {
-                for (int matchCount = 0; matchCount < _currentLevel.MatchingCount; matchCount++)
+                for (int matchCount = 0; matchCount < CurrentLevel.MatchingCount; matchCount++)
                 {
                     CreateTile(tileType);
                 }
@@ -43,7 +42,7 @@ public class LevelGenerator : MonoBehaviour
     {
         randomX = Random.Range(-1.5f, 1.5f);
         randomZ = Random.Range(-2f, 4f);
-        randomY = Random.Range(0.5f, 1.5f);
+        randomY = Random.Range(1f, 1.5f);
         randomYRotation = Random.Range(1, 180);
 
         var tileItem = Instantiate(_tilePrefab,

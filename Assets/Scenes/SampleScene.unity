@@ -241,6 +241,7 @@ MonoBehaviour:
   _undoButton: {fileID: 32001790}
   _starText: {fileID: 7311453231496936876}
   _timeText: {fileID: 1647009017}
+  _levelText: {fileID: 252971645}
 --- !u!1 &32001788
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,6 +394,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &252971645 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8592809238859421757, guid: ab9271e234b70174a91a1a957a2c85fb, type: 3}
+  m_PrefabInstance: {fileID: 625875183}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &460668346
 GameObject:
   m_ObjectHideFlags: 0
@@ -1412,8 +1424,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 10, y: 2.220446e-16, z: 10}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 10, y: 0.26309237, z: 10}
+  m_Center: {x: 0, y: -0.13154618, z: 0}
 --- !u!54 &956483513
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2036,6 +2048,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gamePlayUI: {fileID: 24328627}
+  _levelGenerator: {fileID: 1590009895}
   _tilePool: {fileID: 509946014}
   _rectPositions:
   - {fileID: 1224426181}

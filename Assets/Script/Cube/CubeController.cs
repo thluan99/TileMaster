@@ -48,4 +48,9 @@ public class CubeController : MonoBehaviour, IEntity, IUndo, IStored
     {
         _name = name;
     }
+
+    private void OnDestroy() 
+    {
+        DOTween.Kill(transform);
+    }
 }
