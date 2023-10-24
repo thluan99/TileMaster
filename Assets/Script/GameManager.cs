@@ -12,8 +12,6 @@ public enum GamePlayState
     Lost
 }
 
-//TODO:: Chech bug nhan diem va chon tile khac thi xoa het cac tile trong stored
-
 public class GameManager : MonoBehaviour
 {
     public static readonly float TIME_TO_ANIMATE = 0.4F;
@@ -36,7 +34,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-
         GamePlayObservable = GetComponent<GamePlayObservable>();
         _history = new Stack<IUndo>();
         GamePlayCurrentState = new ReactiveProperty<GamePlayState>(GamePlayState.Playing);
@@ -49,6 +46,7 @@ public class GameManager : MonoBehaviour
         GamePlayObservable.LoseHandleRequest.Subscribe(_ =>
         {
             GamePlayCurrentState.Value = GamePlayState.Lost;
+            SoundManager.Instance.PlaySFX(SoundConstants.LOSE);
         }).AddTo(gameObject);
     }
 
@@ -125,6 +123,8 @@ public class GameManager : MonoBehaviour
 
     private void MoveTileSelected(GameObject hitObject, int i)
     {
+        SoundManager.Instance.PlaySFX(SoundConstants.SELECT_TILE);
+
         IUndo undoCommand = hitObject.GetComponent<IUndo>();
         _history.Push(undoCommand);
 
@@ -150,6 +150,8 @@ public class GameManager : MonoBehaviour
     {
         for (int i = start; i < _rectPositions.Count; i++)
         {
+            Debug.Log("Log i: " + i + " length: " + length);
+
             if (_rectPositions[i].childCount == 0) continue;
 
             GameObject transformRect = _rectPositions[i].GetChild(0).gameObject;
@@ -159,7 +161,7 @@ public class GameManager : MonoBehaviour
 
     private void ShiftTileAllRight(int start)
     {
-        for (int i = _rectPositions.Count - 1; i >= start; i--)
+        for (int i = _rectPositions.Count - 2; i >= start; i--)
         {
             if (_rectPositions[i].childCount != 0 && (i != _rectPositions.Count - 1))
             {
@@ -220,20 +222,26 @@ public class GameManager : MonoBehaviour
             Destroy(_rectPositions[j].GetChild(0).gameObject);
         }
 
-        for (int j = index + 1; j < _rectPositions.Count; j++)
-        {
-            ShiftTileAllLeft(j, _gainPointNumber);
-        }
+        ShiftTileAllLeft(index + 1, _gainPointNumber);
 
         _gamePlayUI.IncreaseStar();
+        SoundManager.Instance.PlaySFX(SoundConstants.COLLECT_TILE);
 
         if (_tilePool.childCount == 0)
-        {
-            GamePlayCurrentState.Value = GamePlayState.Won;
-            LevelManager.Instance.NextLevel().Activate();
-        }
+            HandleWin();
 
         _isGainingStar = false;
+    }
+
+    private void HandleWin()
+    {
+        GamePlayCurrentState.Value = GamePlayState.Won;
+
+        int starCount = PlayerPrefs.HasKey(Constanst.NUMBER_STAR_KEY) ? PlayerPrefs.GetInt(Constanst.NUMBER_STAR_KEY) : 0;
+        PlayerPrefs.SetInt(Constanst.NUMBER_STAR_KEY, starCount + _currentLevel.NumberOfStar);
+        
+        SoundManager.Instance.PlaySFX(SoundConstants.WIN);
+        LevelManager.Instance.NextLevel();
     }
 
     // ======================

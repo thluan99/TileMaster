@@ -51,18 +51,26 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 09375921611300044aa06f24678ec242, type: 3}
+  - {fileID: 21300000, guid: 20214702a5cd3794babbd1384139839d, type: 3}
   - {fileID: 21300000, guid: 06d75e4398fe9a84b9ccd6bb162a028f, type: 3}
   - {fileID: 21300000, guid: e2dac71469d299f42a523673fdfc033c, type: 3}
   - {fileID: 21300000, guid: 7a05a9158bcda204ebf3cf783a4516d4, type: 3}
+  - {fileID: 21300000, guid: 2fb383e6bf5000442aa7b5e085fc3158, type: 3}
+  - {fileID: 21300000, guid: 45861c47a1154844bb40b86c12a7968b, type: 3}
   - {fileID: 21300000, guid: 4a5b28c780f2cad438a3c773eba7df0b, type: 3}
+  - {fileID: 21300000, guid: c35331d8f5109c14c9099f4f6066b173, type: 3}
   - {fileID: 21300000, guid: c3a7618d8a6c640408c8ecc6cb996600, type: 3}
   - {fileID: 21300000, guid: 69ec7fae3d365e045b70fe3591074879, type: 3}
   m_PackedSpriteNamesToIndex:
   - chronometer
+  - rounded-rectangle-red
   - undo
   - rectangle
   - settings
+  - music
+  - volume
   - khung
+  - home-button
   - star
   - button
   m_RenderDataMap: {}

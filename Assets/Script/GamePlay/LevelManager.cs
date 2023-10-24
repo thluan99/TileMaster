@@ -22,7 +22,7 @@ public class LevelManager : GameSingleton<LevelManager>
         }
     }
 
-    private Level LoadCurrentLevel()
+    public Level LoadCurrentLevel()
     {
         var key = PlayerPrefs.GetInt(Level.ActivatedLevelKey);
 
@@ -35,17 +35,25 @@ public class LevelManager : GameSingleton<LevelManager>
         return new Level(levelSettings[0]);
     }
 
-    public Level NextLevel()
+    public void NextLevel()
     {
+        Debug.Log("Level Index: " + currentLevel.LevelIndex + " Levelsettings: " + levelSettings.Length);
         if (currentLevel.LevelIndex == levelSettings.Length)
-            return new Level(levelSettings[0]);
+        {
+            currentLevel = new Level(levelSettings[0]);
+            currentLevel.Activate();
+            return;
+        }
 
         for (int i = 0; i < levelSettings.Length; i++)
         {
             if (levelSettings[i].Level == currentLevel.LevelIndex + 1)
-                return new Level(levelSettings[i]);
+            {
+                currentLevel = new Level(levelSettings[i]);
+                break;
+            }
         }
 
-        return new Level(levelSettings[0]);
+        currentLevel.Activate();
     }
 }
